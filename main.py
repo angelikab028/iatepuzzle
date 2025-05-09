@@ -2,12 +2,13 @@ from termcolor import colored
 import numpy as np
 from copy import deepcopy #https://stackoverflow.com/questions/15214404/how-can-i-copy-an-immutable-object-like-tuple-in-python
 from queue import PriorityQueue #https://builtin.com/data-science/priority-queues-in-python
-import heapq #https://builtin.com/data-science/priority-queues-in-python
+import heapq #https://www.geeksforgeeks.org/heap-queue-or-heapq-in-python/
 
+#problem parameter for generic search algorithm
 class Problem:
     def __init__(self, initial_state):
-        self.INITIAL_STATE = initial_state
-        self.GOAL_STATE = ((1, 2, 3), (4, 5, 6), (7, 8, 0))
+        self.INITIAL_STATE = initial_state #whatever is inputted
+        self.GOAL_STATE = ((1, 2, 3), (4, 5, 6), (7, 8, 0)) #what we want to get to
 
 #returns where the empty "0" tile is
 def get_index_zero(state):
@@ -17,21 +18,23 @@ def get_index_zero(state):
             if state[row][col] == 0:
                 return (row, col)
 
+#swap two tiles in order to create a new state
 def swap(state, index1, index2):
     new_state = []
     for row in state:
-        new_state.append(list(row))
+        new_state.append(list(row)) #convert tuples to lists
     temp = new_state[index1[0]][index1[1]]
     new_state[index1[0]][index1[1]] = new_state[index2[0]][index2[1]]
     new_state[index2[0]][index2[1]] = temp
-
-    tuple_state = (tuple(new_state[0]), tuple(new_state[1]), tuple(new_state[2]))
+    #returns tuple of tuples
+    tuple_state = (tuple(new_state[0]), tuple(new_state[1]), tuple(new_state[2])) 
 
     return tuple_state
 
+#ensures that we only check valid states
 def get_children(state):
     zero_index = get_index_zero(state)
-    possible_moves = [(-1, 0), (1,0), (0, -1), (0, 1)]
+    possible_moves = [(-1, 0), (1,0), (0, -1), (0, 1)] #moving the blank "0" tile up, down, left, or right
     valid_states = []
     for move in possible_moves:
         new_row = zero_index[0] + move[0]
@@ -42,12 +45,13 @@ def get_children(state):
     
     return(valid_states)
 
+#a* with h(n) hardcoded to 0 (no heuristic)
 def uniform_cost_search(problem):
     goal_state = problem.GOAL_STATE
     start_state = problem.INITIAL_STATE
 
     queue = PriorityQueue()
-    queue.put((0, start_state, [], 0))
+    queue.put((0, start_state, [], 0)) #cost, state, path, and depth
     max_queue_size = 1
 
     expanded = set()
@@ -70,27 +74,29 @@ def uniform_cost_search(problem):
                 new_path.append(curr_state)
                 new_depth = depth + 1
                 heuristic = 0
-                new_cost = new_depth
+                new_cost = new_depth #g(n) = h(n)
                 queue.put((new_cost + heuristic, new_state, new_path, new_depth))
-                max_queue_size = max(max_queue_size, queue.qsize())
+                max_queue_size = max(max_queue_size, queue.qsize()) #update max queue size
                 
     return None, None, None, None, None, None
     
+#misplaced tile heuristic    
 def misplaced_tile(state, goal_state):
     num_misplaced_tiles = 0
     for i in range(3):
         for j in range(3):
             if goal_state[i][j] != 0:
                 if state[i][j] != goal_state[i][j]:
-                    num_misplaced_tiles += 1
+                    num_misplaced_tiles += 1 #count the number of tiles that are in the wrong position
     return num_misplaced_tiles
 
+#same as before, just adding misplaced tile as the heuristic
 def astar_misplaced_tile(problem):
     goal_state = problem.GOAL_STATE
     start_state = problem.INITIAL_STATE
 
     queue = PriorityQueue()
-    queue.put((0, start_state, [], 0))
+    queue.put((0, start_state, [], 0)) #cost, state, path, and depth
     max_queue_size = 1
 
     expanded = set()
@@ -112,13 +118,14 @@ def astar_misplaced_tile(problem):
                 new_path = path[:]
                 new_path.append(curr_state)
                 new_depth = depth + 1
-                heuristic = misplaced_tile(new_state, goal_state)
+                heuristic = misplaced_tile(new_state, goal_state) #h(n) is the count of tiles in the wrong position
                 new_cost = new_depth
-                queue.put((new_cost + heuristic, new_state, new_path, new_depth))
-                max_queue_size = max(max_queue_size, queue.qsize())
+                queue.put((new_cost + heuristic, new_state, new_path, new_depth)) #f(n) = g(n) + h(n)
+                max_queue_size = max(max_queue_size, queue.qsize()) #update max queue size
 
     return None, None, None, None, None, None
 
+#manhattan_distance heuristic
 def manhattan_distance(state, goal_state):
     total_distance = 0
     for num in range(1,9):
@@ -133,12 +140,13 @@ def manhattan_distance(state, goal_state):
         total_distance += abs(state_index[0] - goal_index[0]) + abs(state_index[1] - goal_index[1])
     return total_distance
 
+#same as before, just adding manhattan distance as the heuristic
 def astar_manhattan(problem):
     goal_state = problem.GOAL_STATE
     start_state = problem.INITIAL_STATE
 
     queue = PriorityQueue()
-    queue.put((0, start_state, [], 0))
+    queue.put((0, start_state, [], 0)) #cost, state, path, and depth
     max_queue_size = 1
 
     expanded = set()
@@ -160,10 +168,10 @@ def astar_manhattan(problem):
                 new_path = path[:]
                 new_path.append(curr_state)
                 new_depth = depth + 1
-                heuristic = manhattan_distance(new_state, goal_state)
+                heuristic = manhattan_distance(new_state, goal_state) #h(n) is the total manhattan distance
                 new_cost = new_depth
-                queue.put((new_cost + heuristic, new_state, new_path, new_depth))
-                max_queue_size = max(max_queue_size, queue.qsize())
+                queue.put((new_cost + heuristic, new_state, new_path, new_depth)) #f(n) = g(n) + h(n)
+                max_queue_size = max(max_queue_size, queue.qsize()) #update max queue size
 
     return None, None, None, None, None, None
 
