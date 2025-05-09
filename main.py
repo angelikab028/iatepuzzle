@@ -1,4 +1,5 @@
 from termcolor import colored
+from pyfiglet import Figlet
 import numpy as np
 from copy import deepcopy #https://stackoverflow.com/questions/15214404/how-can-i-copy-an-immutable-object-like-tuple-in-python
 from queue import PriorityQueue #https://builtin.com/data-science/priority-queues-in-python
@@ -219,7 +220,7 @@ def main():
     print(puzzle)
 
     print("Lastly, enter which algorithm you would like to run on the puzzle.\n")
-    print ("[1] Uniform Cost Search\n[2] A* with the Misplaced Tile heuristic\n[3] git \n")
+    print ("[1] Uniform Cost Search\n[2] A* with the Misplaced Tile heuristic\n[3] A* with the Manhattan Distance heuristic \n")
 
     alg_input = input("Input 1, 2, or 3 for the algorithm: ")
     while (alg_input not in ["1", "2", "3"]):
