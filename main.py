@@ -10,6 +10,7 @@ class Problem:
         self.INITIAL_STATE = initial_state
         self.GOAL_STATE = ((1, 2, 3), (4, 5, 6), (7, 8, 0))
 
+#returns where the empty "0" tile is
 def get_index_zero(state):
     state = state
     for row in range(3):
@@ -74,7 +75,6 @@ def uniform_cost_search(problem):
                 queue.put((cost + heuristic, new_state, new_path, new_depth))
                 max_queue_size = max(max_queue_size, queue.qsize())
                 
-    
     return None, None, None, None, None, None
     
 def misplaced_tile(state, goal_state):
