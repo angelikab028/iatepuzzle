@@ -10,12 +10,6 @@ class Problem:
         self.INITIAL_STATE = initial_state
         self.GOAL_STATE = ((1, 2, 3), (4, 5, 6), (7, 8, 0))
 
-class Node:
-    def __init__(self, curr_state, path = [], depth = 0):
-        self.CURR_STATE = curr_state
-        self.PATH = path
-        self.DEPTH = depth
-
 def get_index_zero(state):
     state = state
     for row in range(3):
@@ -54,6 +48,7 @@ def uniform_cost_search(problem):
 
     queue = PriorityQueue()
     queue.put((0, start_state, [], 0))
+    max_queue_size = 1
 
     expanded = set()
 
@@ -62,7 +57,7 @@ def uniform_cost_search(problem):
         cost, curr_state, path, depth = queue.get()
 
         if curr_state == goal_state:
-            return cost, curr_state, path, depth, len(expanded)
+            return cost, curr_state, path, depth, len(expanded), max_queue_size
 
         if curr_state in expanded:
             continue
@@ -77,8 +72,10 @@ def uniform_cost_search(problem):
                 heuristic = 0
                 new_cost = cost + 1
                 queue.put((cost + heuristic, new_state, new_path, new_depth))
+                max_queue_size = max(max_queue_size, queue.qsize())
+                
     
-    return None, None, None, None, None
+    return None, None, None, None, None, None
     
 def misplaced_tile(state, goal_state):
     num_misplaced_tiles = 0
@@ -95,6 +92,7 @@ def astar_misplaced_tile(problem):
 
     queue = PriorityQueue()
     queue.put((0, start_state, [], 0))
+    max_queue_size = 1
 
     expanded = set()
 
@@ -103,7 +101,7 @@ def astar_misplaced_tile(problem):
         cost, curr_state, path, depth = queue.get()
 
         if curr_state == goal_state:
-            return cost, curr_state, path, depth, len(expanded)
+            return cost, curr_state, path, depth, len(expanded), max_queue_size
 
         if curr_state in expanded:
             continue
@@ -118,8 +116,9 @@ def astar_misplaced_tile(problem):
                 heuristic = misplaced_tile(new_state, goal_state)
                 new_cost = cost + 1
                 queue.put((cost + heuristic, new_state, new_path, new_depth))
+                max_queue_size = max(max_queue_size, queue.qsize())
 
-    return None, None, None, None, None
+    return None, None, None, None, None, None
 
 def manhattan_distance(state, goal_state):
     total_distance = 0
@@ -141,6 +140,7 @@ def astar_manhattan(problem):
 
     queue = PriorityQueue()
     queue.put((0, start_state, [], 0))
+    max_queue_size = 1
 
     expanded = set()
 
@@ -149,7 +149,7 @@ def astar_manhattan(problem):
         cost, curr_state, path, depth = queue.get()
 
         if curr_state == goal_state:
-            return cost, curr_state, path, depth, len(expanded)
+            return cost, curr_state, path, depth, len(expanded), max_queue_size
 
         if curr_state in expanded:
             continue
@@ -164,8 +164,9 @@ def astar_manhattan(problem):
                 heuristic = manhattan_distance(new_state, goal_state)
                 new_cost = cost + 1
                 queue.put((cost + heuristic, new_state, new_path, new_depth))
+                max_queue_size = max(max_queue_size, queue.qsize())
 
-    return None, None, None, None, None
+    return None, None, None, None, None, None
 
 
 def main():
@@ -217,14 +218,14 @@ def main():
     while (alg_input not in ["1", "2", "3"]):
         alg_input = input("Invalid input. Please enter 1, 2, or 3 only: ")    
     
-    cost, curr_state, path, depth, expanded = None, None, None, None, None
+    cost, curr_state, path, depth, expanded, max_queue_size = None, None, None, None, None, None
 
     if alg_input == "1":
-        cost, curr_state, path, depth, expanded = uniform_cost_search(problem1)
+        cost, curr_state, path, depth, expanded, max_queue_size = uniform_cost_search(problem1)
     if alg_input == "2": 
-        cost, curr_state, path, depth, expanded = astar_misplaced_tile(problem1)
+        cost, curr_state, path, depth, expanded, max_queue_size = astar_misplaced_tile(problem1)
     if alg_input == "3":
-        cost, curr_state, path, depth, expanded = astar_manhattan(problem1)
+        cost, curr_state, path, depth, expanded, max_queue_size = astar_manhattan(problem1)
     
     if cost != None:
         goal = ((1, 2, 3), 
@@ -243,70 +244,11 @@ def main():
         print("Goal State Reached at Depth", depth)
         for row in goal:
             print(row)
-        print(expanded, "States Expenaded to Reach Solution")
+        print(expanded, "States Expanded to Reach Solution")
+        print("Max Queue Size:", max_queue_size)
     else:
         print("No solution")
 
 
 if __name__ == "__main__":
-    state = ((1, 2, 3), 
-             (5, 0, 6), 
-             (4, 7, 8))
-    state1 = ((1, 2, 0), 
-             (4, 5, 6), 
-             (7, 8, 3))
-    state20 = ((7, 1, 2), 
-               (4, 8, 5), 
-               (6, 3, 0))
-    print(state[0][0])
-    test = Node(state)
-    test2 = Node(state)
-
-    if test.CURR_STATE == test2.CURR_STATE:
-        print("TRUEEE!")
-    else:
-        print("FALSEEE")
-    print(get_index_zero(state))
-    print((0,0)[0] + (0,1)[1])
-    print("children:", get_children(state20))
-    print(swap(state, (0, 0), (0, 1)))
-    problem1 = Problem(state1)
-    cost, curr_state, path, depth, expanded = None, None, None, None, None
-
-    cost, curr_state, path, depth, expanded = uniform_cost_search(problem1)
-    print("Final Return Path", path)
-    print("Final Return Depth", depth)
-    print("Misplaced:")
-    cost, curr_state, path, depth, expanded = astar_misplaced_tile(problem1)
-    print("Final Return Path", path)
-    print("Final Return Depth", depth)
-    print("Manhattan:")
-    cost, curr_state, path, depth, expanded = astar_manhattan(problem1)
-    print("Final Return Path", path)
-    print("Final Return Depth", depth)
-
-    print(misplaced_tile(state, problem1.GOAL_STATE))
-    print(manhattan_distance(state1, problem1.GOAL_STATE))
-
-    if cost != None:
-        goal = ((1, 2, 3), 
-                (4, 5, 6), 
-                (7, 8, 0))
-        count = 0
-        print("States Expanded:")
-        for state in path:
-            if count  == 0:
-                print("Beginning State:")
-            else:
-                print("State", count, "Expanded:")
-            count += 1
-            for row in state:
-                print(row)
-        print("Goal State Reached at Depth", depth)
-        for row in goal:
-            print(row)
-        print(expanded, "States Expenaded to Reach Solution")
-    else:
-        print("No solution")
-
     main()
