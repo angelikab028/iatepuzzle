@@ -1,5 +1,4 @@
 from termcolor import colored
-from pyfiglet import Figlet
 import numpy as np
 from copy import deepcopy #https://stackoverflow.com/questions/15214404/how-can-i-copy-an-immutable-object-like-tuple-in-python
 from queue import PriorityQueue #https://builtin.com/data-science/priority-queues-in-python
@@ -71,8 +70,8 @@ def uniform_cost_search(problem):
                 new_path.append(curr_state)
                 new_depth = depth + 1
                 heuristic = 0
-                new_cost = cost + 1
-                queue.put((cost + heuristic, new_state, new_path, new_depth))
+                new_cost = new_depth
+                queue.put((new_cost + heuristic, new_state, new_path, new_depth))
                 max_queue_size = max(max_queue_size, queue.qsize())
                 
     return None, None, None, None, None, None
@@ -114,8 +113,8 @@ def astar_misplaced_tile(problem):
                 new_path.append(curr_state)
                 new_depth = depth + 1
                 heuristic = misplaced_tile(new_state, goal_state)
-                new_cost = cost + 1
-                queue.put((cost + heuristic, new_state, new_path, new_depth))
+                new_cost = new_depth
+                queue.put((new_cost + heuristic, new_state, new_path, new_depth))
                 max_queue_size = max(max_queue_size, queue.qsize())
 
     return None, None, None, None, None, None
@@ -162,8 +161,8 @@ def astar_manhattan(problem):
                 new_path.append(curr_state)
                 new_depth = depth + 1
                 heuristic = manhattan_distance(new_state, goal_state)
-                new_cost = cost + 1
-                queue.put((cost + heuristic, new_state, new_path, new_depth))
+                new_cost = new_depth
+                queue.put((new_cost + heuristic, new_state, new_path, new_depth))
                 max_queue_size = max(max_queue_size, queue.qsize())
 
     return None, None, None, None, None, None
@@ -212,7 +211,7 @@ def main():
     print(puzzle)
 
     print("Lastly, enter which algorithm you would like to run on the puzzle.\n")
-    print ("[1] Uniform Cost Search\n[2] A* with the Misplaced Tile heuristic\n[3] A* with the Manhattan Distance heuristic\n")
+    print ("[1] Uniform Cost Search\n[2] A* with the Misplaced Tile heuristic\n[3] git \n")
 
     alg_input = input("Input 1, 2, or 3 for the algorithm: ")
     while (alg_input not in ["1", "2", "3"]):
